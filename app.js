@@ -1,7 +1,19 @@
 var express = require('express');
 var expressLayout = require('express-ejs-layouts');
+var mssql = require('mssql');
+const dbConifig = require('./Config/db');
 
 var app = express();
+
+//DB connect
+new mssql.ConnectionPool(dbConifig)
+    .connect()
+    .then(() => console.log("DB Connected"))
+    .catch((err) => console.log(err))
+
+
+//Body Parser
+app.use(express.urlencoded({ extended: false }))
 
 //Get ejs
 app.use(expressLayout);
