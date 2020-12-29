@@ -6,3 +6,19 @@
         </div>
     <% }); %>
 <%}%>
+
+
+<% if( successMsg != '' ) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= successMsg %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<%}%>
+
+<% if( errorMsg !='' ) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= errorMsg %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<%}%>
+
