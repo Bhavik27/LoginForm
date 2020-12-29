@@ -1,39 +1,27 @@
-var sql = require("mssql");
+var mssql = require("mssql");
 const dbConifig = require("../Config/db");
-let connPoolPromise = null;
 
-const getConnPoolPromise = (query, res) => {
-    if (connPoolPromise) return connPoolPromise;
+async function executeSQL(query) {
+    mssql.close();
+    return new Promise(function (resolve, reject) {
+        mssql.connect(dbConifig, (err) => {
+            if (err) {
+                console.log('Error while connect DB', err);
+                reject(err)
+            } else {
+                var request = new mssql.Request();
 
-    connPoolPromise = new Promise((resolve, reject) => {
-        const pool = new sql.ConnectionPool(dbConifig);
-
-        pool.on('close', () => {
-            connPoolPromise = null;
-        });
-
-        pool.connect().then(connPool => {
-            return resolve(connPool);
-        }).catch(err => {
-            connPoolPromise = null;
-            return reject(err);
-        });
-
+                request.query(query, (err, result) => {
+                    if (err) {
+                        console.log('Error while execute query', err);
+                        reject(err)
+                    } else {
+                        resolve(result)
+                    }
+                })
+            }
+        })
     })
-    return connPoolPromise;
 }
 
-
-module.exports.query = (sqlQuery, callback) => {
-
-    getConnPoolPromise().then(connPool => {
-
-        return connPool.request().query(sqlQuery);
-
-    }).then(result => {
-        callback(null, result);
-    }).catch(err => {
-        callback(err);
-    });
-
-};
+module.exports = executeSQL;

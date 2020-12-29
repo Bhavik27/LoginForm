@@ -1,6 +1,7 @@
 var express = require('express');
 var bcrypt = require('bcrypt')
 const { query } = require('../DBConnection/connect');
+const executeSQL = require('../DBConnection/connect');
 var router = express.Router();
 
 //Login Page
@@ -13,10 +14,6 @@ router.get('/register', (req, res) => {
     res.render('register')
 });
 
-//Dashboard
-router.get('/dashboard', (req, res) => {
-    res.render('dashboard', { user: req.user })
-})
 
 //Register Handle
 router.post('/register', (req, res) => {
@@ -50,27 +47,28 @@ router.post('/register', (req, res) => {
     }
     else {
         var InsertQuery = `IF NOT EXISTS (select * from LoginMaster where Email = '${email}')
-                    INSERT INTO LoginMaster 
-                    (Name,Email,Password)
-                    VALUES ('${name}','${email}','${password}')`;
-        query(InsertQuery, (err, recordsets) => {
-            if (err) return console.log(err);
-            else if (recordsets.rowsAffected > 0) {
-                req.flash('successMsg', 'You are registered')
-                res.redirect('/user/login')
-            }
-            else {
-                errors.push({ msg: 'mailId already exist' })
-                res.render('register', {
-                    errors,
-                    name,
-                    email,
-                    password,
-                    confirmPassword
-                })
-            }
+                    INSERT INTO LoginMaster (Name,Email,Password) VALUES ('${name}','${email}','${password}')`;
 
-        })
+        executeSQL(InsertQuery)
+            .then((result) => {
+                if (result.rowsAffected > 0) {
+                    req.flash('successMsg', 'You are registered')
+                    res.redirect('/user/login')
+                }
+                else {
+                    errors.push({ msg: 'mailId already exist' })
+                    res.render('register', {
+                        errors,
+                        name,
+                        email,
+                        password,
+                        confirmPassword
+                    })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 })
 
@@ -93,17 +91,26 @@ router.post('/login', async (req, res) => {
         })
     }
     else {
-        var SelectQuery = `SELECT * from LoginMaster 
-                            where 
-                            Email = '${email}' and 
-                            Password = '${password}'`;
-        await query(SelectQuery, (err, recordsets) => {
-            if (err) return console.log(err);
-            else if (recordsets.rowsAffected > 0) {
-                req.flash('successMsg', 'You are logged in')
-                res.redirect('/user/dashboard')
-            }
-        })
+        var SelectQuery = `SELECT * from LoginMaster  where Email = '${email}' and Password = '${password}'`;
+
+        executeSQL(SelectQuery)
+            .then((result) => {
+                if (result.rowsAffected > 0) {
+                    req.flash('successMsg', 'You are logged in')
+                    res.redirect('/dashboard')
+                }
+                else {
+                    errors.push({ msg: 'emailId or password incorrect' });
+                    res.render('login', {
+                        errors,
+                        email,
+                        password
+                    })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 })
 
