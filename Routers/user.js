@@ -1,6 +1,5 @@
 var express = require('express');
 var bcrypt = require('bcrypt')
-const { query } = require('../DBConnection/connect');
 const executeSQL = require('../DBConnection/connect');
 var router = express.Router();
 
@@ -49,7 +48,7 @@ router.post('/register', (req, res) => {
         var InsertQuery = `IF NOT EXISTS (select * from LoginMaster where Email = '${email}')
                     INSERT INTO LoginMaster (Name,Email,Password) VALUES ('${name}','${email}','${password}')`;
 
-        executeSQL(InsertQuery)
+        executeSQL(InsertQuery, req, res)
             .then((result) => {
                 if (result.rowsAffected > 0) {
                     req.flash('successMsg', 'You are registered')
@@ -93,7 +92,7 @@ router.post('/login', async (req, res) => {
     else {
         var SelectQuery = `SELECT * from LoginMaster  where Email = '${email}' and Password = '${password}'`;
 
-        executeSQL(SelectQuery)
+        executeSQL(SelectQuery, req, res)
             .then((result) => {
                 if (result.rowsAffected > 0) {
                     req.flash('successMsg', 'You are logged in')

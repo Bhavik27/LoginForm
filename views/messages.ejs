@@ -22,3 +22,17 @@
     </div>
 <%}%>
 
+<% if(typeof error !='undefined' ) { %>
+    <% error.forEach(function(err){ %>
+        <div class="w-100" >
+            <div class="col-6 offset-2 text-muted">
+                <ul>
+                    <li><%= err.msg %></li>
+                    <li><%= err.errorType %></li>
+                    <li><%= err.errorCode %></li>
+                </ul>
+            </div>
+        </div>
+    <% }); %>
+<%}%>
+
