@@ -1,6 +1,7 @@
 var express = require('express');
 var bcrypt = require('bcrypt')
 const executeSQL = require('../DBConnection/connect');
+const { name } = require('ejs');
 var router = express.Router();
 
 //Login Page
@@ -96,7 +97,7 @@ router.post('/login', async (req, res) => {
             .then((result) => {
                 if (result.rowsAffected > 0) {
                     req.flash('successMsg', 'You are logged in')
-                    res.redirect('/dashboard')
+                    res.redirect('/dashboard/' + result.recordset[0].Name)
                 }
                 else {
                     errors.push({ msg: 'emailId or password incorrect' });

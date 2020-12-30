@@ -2,13 +2,13 @@
 LoginForm using nodeJs
 
 ## requirements
-nodejs
-mssql
-express
-body-parser
-connect-flash
-express-session
-express-ejs-layouts
+- nodejs
+- mssql
+- express
+- body-parser
+- connect-flash
+- express-session
+- express-ejs-layouts
 
 ## steps
 1. `npm install` to install all dependencies needed.

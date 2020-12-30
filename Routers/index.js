@@ -6,13 +6,13 @@ router.get('/', (req, res) => {
 })
 
 //Dashboard
-router.get('/dashboard', (req, res) => {
-    res.render('dashboard', { user: req.user })
+router.get('/dashboard/:name', (req, res) => {
+    res.render('dashboard', { user: req.params.name })
 })
 
 //Error
 router.get('/error', (req, res) => {
-    res.render('error', { user: req.user })
+    res.render('error',)
 })
 
 module.exports = router;
