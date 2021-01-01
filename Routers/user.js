@@ -1,8 +1,14 @@
 var express = require('express');
-var bcrypt = require('bcrypt')
 const executeSQL = require('../DBConnection/connect');
-const { name } = require('ejs');
+const crypto = require('crypto');
+const { json } = require('express');
+
 var router = express.Router();
+const algorithm = 'aes-256-ctr';
+const secretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3';
+const iv = new Buffer.alloc(16, '674587bea5543f149713a785b7e4233d', 'binary');
+const output_encoding = 'hex';
+const input_encoding = 'utf-8';
 
 //Login Page
 router.get('/login', (req, res) => {
@@ -47,8 +53,7 @@ router.post('/register', (req, res) => {
     }
     else {
         var InsertQuery = `IF NOT EXISTS (select * from LoginMaster where Email = '${email}')
-                    INSERT INTO LoginMaster (Name,Email,Password) VALUES ('${name}','${email}','${password}')`;
-
+                    INSERT INTO LoginMaster (Name,Email,Password) VALUES ('${name}','${email}','${encrypt(password)}')`;
         executeSQL(InsertQuery, req, res)
             .then((result) => {
                 if (result.rowsAffected > 0) {
@@ -91,7 +96,7 @@ router.post('/login', async (req, res) => {
         })
     }
     else {
-        var SelectQuery = `SELECT * from LoginMaster  where Email = '${email}' and Password = '${password}'`;
+        var SelectQuery = `SELECT * from LoginMaster  where Email = '${email}' and Password = '${encrypt(password)}'`;
 
         executeSQL(SelectQuery, req, res)
             .then((result) => {
@@ -113,5 +118,12 @@ router.post('/login', async (req, res) => {
             });
     }
 })
+
+
+function encrypt(data) {
+    var cipher = crypto.createCipheriv(algorithm, secretKey, iv)
+    var cipherText = cipher.update(JSON.stringify(data), input_encoding, output_encoding) + cipher.final(output_encoding)
+    return cipherText
+}
 
 module.exports = router

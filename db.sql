@@ -16,11 +16,6 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'LoginMaster' )
         [Date] [date] NULL DEFAULT (getdate()),
         )
 
-        INSERT INTO [LoginMaster]
-        (Name,Email,Password)
-        VALUES
-        ('admin','admin@main.com','admin12345')
-
     END
 
 
