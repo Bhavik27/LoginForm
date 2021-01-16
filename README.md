@@ -9,6 +9,7 @@ LoginForm using nodeJs
 - connect-flash
 - express-session
 - express-ejs-layouts
+- crypto
 
 ## steps
 1. `npm install` to install all dependencies needed.
